@@ -4,9 +4,13 @@ import { Lightbulb } from 'lucide-react';
 
 interface MotivationalInsightProps {
   message: string;
+  title?: string;
 }
 
-const MotivationalInsight: React.FC<MotivationalInsightProps> = ({ message }) => {
+const MotivationalInsight: React.FC<MotivationalInsightProps> = ({ 
+  message, 
+  title = "Daily Insight" 
+}) => {
   return (
     <div className="bg-habit-accent text-habit-secondary rounded-xl p-5 border border-habit-primary/10 mb-6">
       <div className="flex items-center space-x-3">
@@ -14,7 +18,7 @@ const MotivationalInsight: React.FC<MotivationalInsightProps> = ({ message }) =>
           <Lightbulb className="h-4 w-4 text-habit-primary" />
         </div>
         <div>
-          <h3 className="font-medium text-habit-primary">Daily Insight</h3>
+          <h3 className="font-medium text-habit-primary">{title}</h3>
           <p className="text-sm mt-1">{message}</p>
         </div>
       </div>
