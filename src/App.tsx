@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Habits from "./pages/Habits";
 import Calendar from "./pages/Calendar";
 import ProgressAnalytics from "./pages/ProgressAnalytics";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/habits" element={<Habits />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/progress" element={<ProgressAnalytics />} />
+          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
