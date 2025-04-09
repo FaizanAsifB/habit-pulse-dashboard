@@ -10,7 +10,8 @@ import {
   Settings, 
   User,
   Home,
-  Dumbbell
+  Dumbbell,
+  BarChart
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -62,6 +63,17 @@ const TopNavBar = () => {
           >
             <Calendar className="h-4 w-4" />
             <span>Calendar</span>
+          </Button>
+        </Link>
+        
+        <Link to="/progress">
+          <Button 
+            variant={location.pathname === '/progress' ? 'default' : 'ghost'} 
+            size="sm" 
+            className="hidden md:flex items-center gap-1"
+          >
+            <BarChart className="h-4 w-4" />
+            <span>Progress</span>
           </Button>
         </Link>
         
