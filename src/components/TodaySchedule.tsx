@@ -1,21 +1,22 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Check, Clock, Trash, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+type TaskStatus = 'completed' | 'pending' | 'skipped';
+
 interface Task {
   id: string;
   title: string;
   time: string;
-  status: 'completed' | 'pending' | 'skipped';
+  status: TaskStatus;
   category?: string;
 }
 
 interface TodayScheduleProps {
   date: Date;
   tasks: Task[];
-  onUpdateTaskStatus: (taskId: string, status: 'completed' | 'pending' | 'skipped') => void;
+  onUpdateTaskStatus: (taskId: string, status: TaskStatus) => void;
 }
 
 const TodaySchedule: React.FC<TodayScheduleProps> = ({ date, tasks, onUpdateTaskStatus }) => {

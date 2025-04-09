@@ -7,41 +7,52 @@ import QuickStats from '@/components/QuickStats';
 import StreaksAndProgress from '@/components/StreaksAndProgress';
 import MotivationalInsight from '@/components/MotivationalInsight';
 
-// Sample mock data
-const mockTasks = [
+// Updated type definition to include 'skipped' status
+type TaskStatus = 'completed' | 'pending' | 'skipped';
+
+interface Task {
+  id: string;
+  title: string;
+  time: string;
+  status: TaskStatus;
+  category?: string;
+}
+
+// Sample mock data with updated type
+const mockTasks: Task[] = [
   {
     id: '1',
     title: 'Morning Meditation',
     time: '7:00 AM',
-    status: 'completed' as const,
+    status: 'completed',
     category: 'Mindfulness'
   },
   {
     id: '2',
     title: 'Workout Session',
     time: '8:30 AM',
-    status: 'completed' as const,
+    status: 'completed',
     category: 'Fitness'
   },
   {
     id: '3',
     title: 'Read Book',
     time: '12:00 PM',
-    status: 'pending' as const,
+    status: 'pending',
     category: 'Learning'
   },
   {
     id: '4',
     title: 'Project Planning',
     time: '3:00 PM',
-    status: 'pending' as const,
+    status: 'pending',
     category: 'Work'
   },
   {
     id: '5',
     title: 'Evening Walk',
     time: '6:00 PM',
-    status: 'pending' as const,
+    status: 'pending',
     category: 'Fitness'
   }
 ];
@@ -113,12 +124,12 @@ const motivationalMessages = [
 
 const Index = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [tasks, setTasks] = useState(mockTasks);
+  const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [motivationalMessage, setMotivationalMessage] = useState(
     motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)]
   );
   
-  const handleUpdateTaskStatus = (taskId: string, status: 'completed' | 'pending' | 'skipped') => {
+  const handleUpdateTaskStatus = (taskId: string, status: TaskStatus) => {
     setTasks(prevTasks => 
       prevTasks.map(task => 
         task.id === taskId ? { ...task, status } : task
