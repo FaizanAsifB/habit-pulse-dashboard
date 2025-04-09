@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Bell, 
   Calendar, 
@@ -7,7 +8,9 @@ import {
   LogOut, 
   PlusCircle,
   Settings, 
-  User 
+  User,
+  Home,
+  Dumbbell
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -20,21 +23,51 @@ import {
 import { Button } from '@/components/ui/button';
 
 const TopNavBar = () => {
+  const location = useLocation();
+
   return (
     <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
       <div className="flex items-center">
-        <h1 className="text-xl font-bold text-habit-primary">HabitPulse</h1>
+        <Link to="/" className="text-xl font-bold text-habit-primary">HabitPulse</Link>
       </div>
       
       <div className="flex items-center space-x-2 sm:space-x-4">
+        <Link to="/">
+          <Button 
+            variant={location.pathname === '/' ? 'default' : 'ghost'} 
+            size="sm" 
+            className="hidden md:flex items-center gap-1"
+          >
+            <Home className="h-4 w-4" />
+            <span>Dashboard</span>
+          </Button>
+        </Link>
+        
+        <Link to="/habits">
+          <Button 
+            variant={location.pathname === '/habits' ? 'default' : 'ghost'} 
+            size="sm" 
+            className="hidden md:flex items-center gap-1"
+          >
+            <Dumbbell className="h-4 w-4" />
+            <span>Habits</span>
+          </Button>
+        </Link>
+        
+        <Link to="/calendar">
+          <Button 
+            variant={location.pathname === '/calendar' ? 'default' : 'ghost'} 
+            size="sm" 
+            className="hidden md:flex items-center gap-1"
+          >
+            <Calendar className="h-4 w-4" />
+            <span>Calendar</span>
+          </Button>
+        </Link>
+        
         <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1">
           <PlusCircle className="h-4 w-4" />
           <span>Add Habit</span>
-        </Button>
-        
-        <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1">
-          <Calendar className="h-4 w-4" />
-          <span>Calendar</span>
         </Button>
         
         <Button variant="ghost" size="icon" className="relative">
