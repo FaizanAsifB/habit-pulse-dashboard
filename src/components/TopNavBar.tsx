@@ -35,9 +35,9 @@ const TopNavBar = () => {
       </div>
       
       <div className="flex items-center space-x-2 sm:space-x-4">
-        <Link to="/">
+        <Link to="/dashboard">
           <Button 
-            variant={location.pathname === '/' ? 'default' : 'ghost'} 
+            variant={location.pathname === '/dashboard' ? 'default' : 'ghost'} 
             size="sm" 
             className="hidden md:flex items-center gap-1"
           >
