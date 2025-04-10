@@ -71,7 +71,18 @@ export default {
 					success: '#4ade80',
 					warning: '#fbbf24',
 					danger: '#f87171',
-				}
+				},
+				// New color palette
+				"brand-indigo": "#4F46E5", // Primary - Motivation & Action
+				"brand-green": "#10B981", // Secondary - Balance & Habitual Flow
+				"brand-light-gray": "#F9FAFB", // Background/Canvas - Calm and Focused
+				"brand-white": "#FFFFFF", // Surface / Card Base
+				"brand-text-primary": "#111827", // Primary Text (Near Black)
+				"brand-text-secondary": "#6B7280", // Secondary Text (Cool Gray)
+				"brand-success": "#10B981", // Success state
+				"brand-warning": "#F59E0B", // Warning state
+				"brand-error": "#EF4444", // Error state
+				"brand-info": "#3B82F6", // Info state
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

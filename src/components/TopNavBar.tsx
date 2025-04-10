@@ -29,9 +29,9 @@ const TopNavBar = () => {
   const location = useLocation();
 
   return (
-    <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+    <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 bg-brand-white dark:bg-gray-900">
       <div className="flex items-center">
-        <Link to="/" className="text-xl font-bold text-habit-primary">HabitPulse</Link>
+        <Link to="/" className="text-xl font-bold text-brand-indigo">HabitPulse</Link>
       </div>
       
       <div className="flex items-center space-x-2 sm:space-x-4">
@@ -108,14 +108,14 @@ const TopNavBar = () => {
         
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
-          <span className="absolute top-0 right-0 h-2 w-2 bg-habit-primary rounded-full"></span>
+          <span className="absolute top-0 right-0 h-2 w-2 bg-brand-indigo rounded-full"></span>
         </Button>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-habit-accent flex items-center justify-center">
-                <User className="h-4 w-4 text-habit-primary" />
+              <div className="h-8 w-8 rounded-full bg-brand-indigo/10 flex items-center justify-center">
+                <User className="h-4 w-4 text-brand-indigo" />
               </div>
               <ChevronDown className="h-4 w-4" />
             </Button>
