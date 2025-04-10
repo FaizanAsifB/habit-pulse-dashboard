@@ -11,7 +11,8 @@ import {
   User,
   Home,
   Dumbbell,
-  BarChart
+  BarChart,
+  CheckSquare
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -52,6 +53,17 @@ const TopNavBar = () => {
           >
             <Dumbbell className="h-4 w-4" />
             <span>Habits</span>
+          </Button>
+        </Link>
+        
+        <Link to="/tasks">
+          <Button 
+            variant={location.pathname === '/tasks' ? 'default' : 'ghost'} 
+            size="sm" 
+            className="hidden md:flex items-center gap-1"
+          >
+            <CheckSquare className="h-4 w-4" />
+            <span>Tasks</span>
           </Button>
         </Link>
         
