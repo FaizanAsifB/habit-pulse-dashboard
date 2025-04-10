@@ -1,27 +1,37 @@
 
-import React, { useState } from 'react';
-import { format, addDays, subDays, addMonths, subMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay } from 'date-fns';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle, Filter, Sun, Clock } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { format, addDays, subDays, addMonths, subMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay, parseISO } from 'date-fns';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle, Filter, Sun, Clock, GripVertical, Edit, Trash2, X, Move } from 'lucide-react';
 import TopNavBar from '@/components/TopNavBar';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import EnergyLevelOverlay from '@/components/EnergyLevelOverlay';
+import TimeBlockForm, { TimeBlockFormData } from '@/components/TimeBlockForm';
 
 // Type for calendar view options
 type CalendarView = 'day' | 'week' | 'month';
 
-// Sample time block/task data
+// Expanded time block/task data
 interface TimeBlock {
   id: string;
   title: string;
+  description?: string;
   startTime: string;
   endTime: string;
   date: Date;
   category?: string;
   completed?: boolean;
+}
+
+// Energy level data type
+interface EnergyLevelData {
+  date: string;
+  level: number;
 }
 
 // Generate sample data
@@ -34,6 +44,7 @@ const generateSampleTimeBlocks = (): TimeBlock[] => {
     {
       id: '1',
       title: 'Morning Meditation',
+      description: 'Focus on breathing and mindfulness',
       startTime: '07:00',
       endTime: '07:30',
       date: today,
@@ -43,6 +54,7 @@ const generateSampleTimeBlocks = (): TimeBlock[] => {
     {
       id: '2',
       title: 'Workout Session',
+      description: 'Strength training day',
       startTime: '08:30',
       endTime: '09:30',
       date: today,
@@ -52,6 +64,7 @@ const generateSampleTimeBlocks = (): TimeBlock[] => {
     {
       id: '3',
       title: 'Project Planning',
+      description: 'Quarterly goals review',
       startTime: '10:00',
       endTime: '11:30',
       date: today,
@@ -61,6 +74,7 @@ const generateSampleTimeBlocks = (): TimeBlock[] => {
     {
       id: '4',
       title: 'Team Meeting',
+      description: 'Weekly sync',
       startTime: '14:00',
       endTime: '15:00',
       date: tomorrow,
@@ -70,6 +84,7 @@ const generateSampleTimeBlocks = (): TimeBlock[] => {
     {
       id: '5',
       title: 'Evening Run',
+      description: '5k easy pace',
       startTime: '18:00',
       endTime: '19:00',
       date: dayAfter,
@@ -79,11 +94,51 @@ const generateSampleTimeBlocks = (): TimeBlock[] => {
   ];
 };
 
+// Generate sample energy level data for the last two weeks
+const generateSampleEnergyData = (): EnergyLevelData[] => {
+  const data: EnergyLevelData[] = [];
+  const today = new Date();
+  
+  // Generate some sample energy data for the week
+  for (let i = -3; i <= 3; i++) {
+    const date = addDays(today, i);
+    const dateString = format(date, 'yyyy-MM-dd');
+    
+    // Random energy level between 1 and 5
+    const level = Math.floor(Math.random() * 5) + 1;
+    
+    data.push({
+      date: dateString,
+      level
+    });
+  }
+  
+  return data;
+};
+
 const CalendarPage: React.FC = () => {
+  // State variables
   const [view, setView] = useState<CalendarView>('week');
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [timeBlocks, setTimeBlocks] = useState<TimeBlock[]>(generateSampleTimeBlocks());
   const [showCompleted, setShowCompleted] = useState<boolean>(true);
+  const [energyLevels, setEnergyLevels] = useState<EnergyLevelData[]>(generateSampleEnergyData());
+  
+  // Modal and form state
+  const [isTimeBlockFormOpen, setIsTimeBlockFormOpen] = useState<boolean>(false);
+  const [editingTimeBlock, setEditingTimeBlock] = useState<TimeBlock | null>(null);
+  const [showQuickAdd, setShowQuickAdd] = useState<boolean>(false);
+  const [quickAddPosition, setQuickAddPosition] = useState<{top: number, left: number, date: Date, hour: number}>({
+    top: 0, 
+    left: 0, 
+    date: new Date(), 
+    hour: 9
+  });
+  
+  // Drag and drop state
+  const dragTimeBlockRef = useRef<string | null>(null);
+  const targetHourRef = useRef<number | null>(null);
+  const targetDateRef = useRef<Date | null>(null);
   
   // Navigation functions
   const goToToday = () => setCurrentDate(new Date());
@@ -106,6 +161,18 @@ const CalendarPage: React.FC = () => {
     } else {
       setCurrentDate(prevDate => addMonths(prevDate, 1));
     }
+  };
+  
+  // Handle energy level updates
+  const handleUpdateEnergyLevel = (date: string, level: number) => {
+    setEnergyLevels(prev => {
+      const existing = prev.findIndex(item => item.date === date);
+      if (existing !== -1) {
+        return prev.map(item => item.date === date ? { ...item, level } : item);
+      } else {
+        return [...prev, { date, level }];
+      }
+    });
   };
   
   // Generate header title based on current view
@@ -164,10 +231,132 @@ const CalendarPage: React.FC = () => {
     };
   });
   
-  // Add a new time block
+  // Handle time block actions
   const handleAddTimeBlock = () => {
-    // This would typically open a modal or form to add a new time block
-    alert('Add time block functionality would go here');
+    setEditingTimeBlock(null);
+    setIsTimeBlockFormOpen(true);
+  };
+  
+  const handleEditTimeBlock = (block: TimeBlock) => {
+    setEditingTimeBlock(block);
+    setIsTimeBlockFormOpen(true);
+  };
+  
+  const handleDeleteTimeBlock = (id: string) => {
+    setTimeBlocks(prev => prev.filter(block => block.id !== id));
+  };
+  
+  const handleToggleCompleted = (id: string) => {
+    setTimeBlocks(prev => 
+      prev.map(block => 
+        block.id === id ? { ...block, completed: !block.completed } : block
+      )
+    );
+  };
+  
+  const handleSaveTimeBlock = (data: TimeBlockFormData) => {
+    if (editingTimeBlock) {
+      // Update existing
+      setTimeBlocks(prev => 
+        prev.map(block => 
+          block.id === editingTimeBlock.id 
+            ? { ...data, id: block.id } as TimeBlock 
+            : block
+        )
+      );
+    } else {
+      // Add new
+      const newId = Date.now().toString();
+      setTimeBlocks(prev => [...prev, { ...data, id: newId } as TimeBlock]);
+    }
+    
+    setIsTimeBlockFormOpen(false);
+    setEditingTimeBlock(null);
+  };
+  
+  // Quick add time block
+  const handleQuickAdd = (e: React.MouseEvent, hour: number, date: Date) => {
+    // Only handle right clicks or ctrl+clicks for quick add
+    if (e.button === 2 || e.ctrlKey) {
+      e.preventDefault();
+      const rect = e.currentTarget.getBoundingClientRect();
+      setQuickAddPosition({
+        top: e.clientY - rect.top,
+        left: e.clientX - rect.left,
+        date,
+        hour
+      });
+      setShowQuickAdd(true);
+    }
+  };
+  
+  const handleQuickAddSubmit = (title: string) => {
+    if (title.trim()) {
+      const { date, hour } = quickAddPosition;
+      const startTime = `${hour.toString().padStart(2, '0')}:00`;
+      const endTime = `${(hour + 1).toString().padStart(2, '0')}:00`;
+      
+      const newTimeBlock: TimeBlock = {
+        id: Date.now().toString(),
+        title,
+        startTime,
+        endTime,
+        date,
+        category: 'Work'
+      };
+      
+      setTimeBlocks(prev => [...prev, newTimeBlock]);
+      setShowQuickAdd(false);
+    }
+  };
+  
+  // Drag and drop time block
+  const handleDragStart = (e: React.DragEvent, blockId: string) => {
+    e.dataTransfer.setData('text/plain', blockId);
+    dragTimeBlockRef.current = blockId;
+  };
+  
+  const handleDragOver = (e: React.DragEvent, hour: number, date: Date) => {
+    e.preventDefault();
+    targetHourRef.current = hour;
+    targetDateRef.current = date;
+  };
+  
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const blockId = dragTimeBlockRef.current;
+    const targetHour = targetHourRef.current;
+    const targetDate = targetDateRef.current;
+    
+    if (blockId && targetHour !== null && targetDate) {
+      setTimeBlocks(prev => {
+        return prev.map(block => {
+          if (block.id === blockId) {
+            // Calculate the duration of the original block
+            const startHour = parseInt(block.startTime.split(':')[0]);
+            const endHour = parseInt(block.endTime.split(':')[0]);
+            const duration = endHour - startHour;
+            
+            // Create new time range starting from the target hour
+            const newStartTime = `${targetHour.toString().padStart(2, '0')}:00`;
+            const newEndTime = `${(targetHour + duration).toString().padStart(2, '0')}:00`;
+            
+            return {
+              ...block,
+              date: targetDate,
+              startTime: newStartTime,
+              endTime: newEndTime
+            };
+          }
+          return block;
+        });
+      });
+    }
+    
+    // Reset refs
+    dragTimeBlockRef.current = null;
+    targetHourRef.current = null;
+    targetDateRef.current = null;
   };
   
   // Render time block card
@@ -176,7 +365,8 @@ const CalendarPage: React.FC = () => {
       'Mindfulness': 'bg-purple-100 border-purple-300 text-purple-700',
       'Fitness': 'bg-emerald-100 border-emerald-300 text-emerald-700',
       'Work': 'bg-blue-100 border-blue-300 text-blue-700',
-      'Learning': 'bg-amber-100 border-amber-300 text-amber-700'
+      'Learning': 'bg-amber-100 border-amber-300 text-amber-700',
+      'Personal': 'bg-pink-100 border-pink-300 text-pink-700'
     };
     
     const colorClass = block.category && categoryColors[block.category] 
@@ -186,8 +376,32 @@ const CalendarPage: React.FC = () => {
     return (
       <div 
         key={block.id}
-        className={`time-block p-2 rounded-md border mb-2 ${colorClass} ${block.completed ? 'opacity-60' : ''}`}
+        className={`time-block p-2 rounded-md border mb-2 ${colorClass} ${block.completed ? 'opacity-60' : ''} cursor-move hover:shadow-md transition-shadow relative group`}
+        draggable
+        onDragStart={(e) => handleDragStart(e, block.id)}
       >
+        <div className="absolute top-1 right-1 flex opacity-0 group-hover:opacity-100 transition-opacity">
+          <button 
+            onClick={() => handleToggleCompleted(block.id)} 
+            className="p-1 rounded-md hover:bg-white/50 text-gray-500 hover:text-gray-700"
+          >
+            <input type="checkbox" checked={block.completed} readOnly className="h-3 w-3" />
+          </button>
+          <button 
+            onClick={() => handleEditTimeBlock(block)} 
+            className="p-1 rounded-md hover:bg-white/50 text-gray-500 hover:text-gray-700"
+          >
+            <Edit className="h-3 w-3" />
+          </button>
+          <button 
+            onClick={() => handleDeleteTimeBlock(block.id)} 
+            className="p-1 rounded-md hover:bg-white/50 text-gray-500 hover:text-red-500"
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
+        </div>
+        
+        <GripVertical className="h-3 w-3 inline-block mr-1 text-gray-400" />
         <div className="font-medium">{block.title}</div>
         <div className="text-xs flex items-center">
           <Clock className="h-3 w-3 mr-1" />
@@ -208,6 +422,13 @@ const CalendarPage: React.FC = () => {
     
     return (
       <div className="day-view h-[calc(100vh-220px)] overflow-y-auto">
+        <EnergyLevelOverlay 
+          data={energyLevels}
+          onUpdateEnergyLevel={handleUpdateEnergyLevel}
+          view="day"
+          className="mb-4"
+        />
+        
         <div className="grid grid-cols-[100px_1fr] gap-2">
           {timeSlots.map(timeSlot => {
             const hour = parseInt(timeSlot.split(':')[0]);
@@ -221,7 +442,20 @@ const CalendarPage: React.FC = () => {
                 <div className="time-slot text-right pr-4 text-gray-500 text-sm py-2 sticky left-0">
                   {timeSlot}
                 </div>
-                <div className="time-content min-h-[60px] border-t border-gray-100 py-2">
+                <div 
+                  className="time-content min-h-[60px] border-t border-gray-100 py-2"
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    handleQuickAdd(e, hour, currentDate);
+                  }}
+                  onClick={(e) => {
+                    if (e.ctrlKey) {
+                      handleQuickAdd(e, hour, currentDate);
+                    }
+                  }}
+                  onDragOver={(e) => handleDragOver(e, hour, currentDate)}
+                  onDrop={handleDrop}
+                >
                   {timeBlocksForHour.map(block => renderTimeBlock(block))}
                 </div>
               </React.Fragment>
@@ -238,6 +472,13 @@ const CalendarPage: React.FC = () => {
     
     return (
       <div className="week-view h-[calc(100vh-220px)] overflow-y-auto">
+        <EnergyLevelOverlay 
+          data={energyLevels}
+          onUpdateEnergyLevel={handleUpdateEnergyLevel}
+          view="week"
+          className="mb-4"
+        />
+        
         <div className="grid grid-cols-[100px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-2">
           {/* Header row with day names */}
           <div className="sticky top-0 bg-white z-10">
@@ -276,6 +517,17 @@ const CalendarPage: React.FC = () => {
                     <div 
                       key={`${day.date.toISOString()}-${timeSlot}`} 
                       className="time-cell min-h-[60px] border-t border-gray-100 py-1 px-1"
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        handleQuickAdd(e, hour, day.date);
+                      }}
+                      onClick={(e) => {
+                        if (e.ctrlKey) {
+                          handleQuickAdd(e, hour, day.date);
+                        }
+                      }}
+                      onDragOver={(e) => handleDragOver(e, hour, day.date)}
+                      onDrop={handleDrop}
                     >
                       {dayBlocks.map(block => renderTimeBlock(block))}
                     </div>
@@ -445,6 +697,58 @@ const CalendarPage: React.FC = () => {
           )}
         </div>
       </main>
+      
+      {/* Time Block Form Dialog */}
+      <Dialog open={isTimeBlockFormOpen} onOpenChange={setIsTimeBlockFormOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{editingTimeBlock ? 'Edit Time Block' : 'Add Time Block'}</DialogTitle>
+          </DialogHeader>
+          <TimeBlockForm 
+            initialData={editingTimeBlock || undefined}
+            onSubmit={handleSaveTimeBlock}
+            onCancel={() => setIsTimeBlockFormOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+      
+      {/* Quick Add Popup */}
+      {showQuickAdd && (
+        <div 
+          style={{
+            position: 'absolute',
+            top: `${quickAddPosition.top}px`,
+            left: `${quickAddPosition.left}px`,
+            zIndex: 50
+          }}
+          className="quick-add-popup bg-white rounded-md shadow-lg p-2 border border-gray-200"
+        >
+          <div className="flex items-center">
+            <input 
+              type="text" 
+              placeholder="Quick add task..."
+              className="border-none focus:ring-0 text-sm"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleQuickAddSubmit((e.target as HTMLInputElement).value);
+                } else if (e.key === 'Escape') {
+                  setShowQuickAdd(false);
+                }
+              }}
+            />
+            <button 
+              onClick={() => setShowQuickAdd(false)}
+              className="ml-2 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            {format(quickAddPosition.date, 'MMM d')} at {quickAddPosition.hour}:00
+          </div>
+        </div>
+      )}
     </div>
   );
 };
