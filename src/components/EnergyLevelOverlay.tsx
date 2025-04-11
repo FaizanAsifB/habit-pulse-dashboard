@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Battery, BatteryCharging, BatteryFull, BatteryLow, BatteryMedium, BatteryWarning } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface EnergyLevelData {
   date: string; // ISO date string
@@ -54,13 +55,13 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
     setActiveDate(null);
   };
   
-  // Fix: Removed the incorrect 'month' comparison
+  // Only display for day or week views
   if (view !== 'day' && view !== 'week') {
-    return null; // Only display for day or week views
+    return null;
   }
   
   return (
-    <div className={cn("energy-level-overlay relative z-10", className)}>
+    <div className={cn("energy-level-overlay relative", className)} style={{ zIndex: 30 }}>
       {view === 'day' && (
         <div className="energy-day-view mb-2 p-2 rounded-md">
           <div className="flex items-center justify-between">
@@ -99,18 +100,24 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
             <div 
               key={item.date}
               className={`energy-indicator relative flex-1 mx-px h-2 rounded-full ${getEnergyColor(item.level)}`}
-              onClick={() => handleEnergyClick(item.date)}
             >
-              {activeDate === item.date && (
-                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-20 bg-white dark:bg-gray-800 shadow-lg rounded-md p-1 border border-gray-200 dark:border-gray-700">
-                  <div className="flex space-x-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button 
+                    className="absolute inset-0 w-full h-full cursor-pointer"
+                    aria-label={`Set energy level for ${item.date}`}
+                  />
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="p-0 w-auto bg-white dark:bg-gray-800 shadow-lg rounded-md border border-gray-200 dark:border-gray-700"
+                  sideOffset={5}
+                  align="center"
+                >
+                  <div className="flex space-x-1 p-2">
                     {[1, 2, 3, 4, 5].map(level => (
                       <button
                         key={level}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSelectLevel(item.date, level);
-                        }}
+                        onClick={() => handleSelectLevel(item.date, level)}
                         className={`p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
                           item.level === level ? 'bg-gray-200 dark:bg-gray-600' : ''
                         }`}
@@ -119,8 +126,8 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
                       </button>
                     ))}
                   </div>
-                </div>
-              )}
+                </PopoverContent>
+              </Popover>
             </div>
           ))}
         </div>
