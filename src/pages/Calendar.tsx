@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
+import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, addDays } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import TopNavBar from '@/components/TopNavBar';
@@ -101,8 +101,8 @@ const CalendarPage: React.FC = () => {
       {
         id: '1',
         title: 'Morning Meditation',
-        start: new Date(today.setHours(7, 0, 0, 0)),
-        end: new Date(today.setHours(7, 30, 0, 0)),
+        start: new Date(new Date(today).setHours(7, 0, 0, 0)),
+        end: new Date(new Date(today).setHours(7, 30, 0, 0)),
         category: 'Mindfulness',
         completed: true,
         description: 'Focus on breathing and mindfulness'
@@ -110,8 +110,8 @@ const CalendarPage: React.FC = () => {
       {
         id: '2',
         title: 'Workout Session',
-        start: new Date(today.setHours(8, 30, 0, 0)),
-        end: new Date(today.setHours(9, 30, 0, 0)),
+        start: new Date(new Date(today).setHours(8, 30, 0, 0)),
+        end: new Date(new Date(today).setHours(9, 30, 0, 0)),
         category: 'Fitness',
         completed: false,
         description: 'Strength training day'
@@ -119,8 +119,8 @@ const CalendarPage: React.FC = () => {
       {
         id: '3',
         title: 'Project Planning',
-        start: new Date(tomorrow.setHours(10, 0, 0, 0)),
-        end: new Date(tomorrow.setHours(11, 30, 0, 0)),
+        start: new Date(new Date(tomorrow).setHours(10, 0, 0, 0)),
+        end: new Date(new Date(tomorrow).setHours(11, 30, 0, 0)),
         category: 'Work',
         completed: false,
         description: 'Quarterly goals review'
@@ -128,8 +128,8 @@ const CalendarPage: React.FC = () => {
       {
         id: '4',
         title: 'Team Meeting',
-        start: new Date(tomorrow.setHours(14, 0, 0, 0)),
-        end: new Date(tomorrow.setHours(15, 0, 0, 0)),
+        start: new Date(new Date(tomorrow).setHours(14, 0, 0, 0)),
+        end: new Date(new Date(tomorrow).setHours(15, 0, 0, 0)),
         category: 'Work',
         completed: false,
         description: 'Weekly sync'
@@ -137,8 +137,8 @@ const CalendarPage: React.FC = () => {
       {
         id: '5',
         title: 'Evening Run',
-        start: new Date(dayAfter.setHours(18, 0, 0, 0)),
-        end: new Date(dayAfter.setHours(19, 0, 0, 0)),
+        start: new Date(new Date(dayAfter).setHours(18, 0, 0, 0)),
+        end: new Date(new Date(dayAfter).setHours(19, 0, 0, 0)),
         category: 'Fitness',
         completed: false,
         description: '5k easy pace'
@@ -390,7 +390,7 @@ const CalendarPage: React.FC = () => {
         
         {/* Main calendar content */}
         <div className="calendar-content bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-          <Calendar
+          <BigCalendar
             localizer={localizer}
             events={showCompleted ? events : events.filter(event => !event.completed)}
             startAccessor="start"

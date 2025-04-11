@@ -61,7 +61,7 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
   }
   
   return (
-    <div className={cn("energy-level-overlay relative", className)} style={{ zIndex: 30 }}>
+    <div className={cn("energy-level-overlay relative", className)} style={{ zIndex: 40 }}>
       {view === 'day' && (
         <div className="energy-day-view mb-2 p-2 rounded-md">
           <div className="flex items-center justify-between">
@@ -112,6 +112,7 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
                   className="p-0 w-auto bg-white dark:bg-gray-800 shadow-lg rounded-md border border-gray-200 dark:border-gray-700"
                   sideOffset={5}
                   align="center"
+                  style={{ zIndex: 100 }}
                 >
                   <div className="flex space-x-1 p-2">
                     {[1, 2, 3, 4, 5].map(level => (

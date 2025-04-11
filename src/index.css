@@ -124,3 +124,45 @@
     @apply flex items-center space-x-3 p-3 border-b border-gray-100 dark:border-gray-700 last:border-0;
   }
 }
+
+/* React Big Calendar custom styles */
+.rbc-calendar {
+  width: 100%;
+}
+
+.rbc-event {
+  border: none !important;
+  border-radius: 4px !important;
+  font-size: 0.875rem !important;
+}
+
+.rbc-today {
+  background-color: rgba(79, 70, 229, 0.1) !important;
+}
+
+.rbc-header {
+  padding: 8px 4px !important;
+  font-weight: 500 !important;
+}
+
+.rbc-button-link {
+  font-weight: 500 !important;
+}
+
+.rbc-off-range-bg {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.dark .rbc-off-range-bg {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.energy-level-overlay .popover-content {
+  z-index: 100 !important;
+}
+
+.rbc-month-view, 
+.rbc-time-view, 
+.rbc-agenda-view {
+  z-index: 10 !important;
+}
