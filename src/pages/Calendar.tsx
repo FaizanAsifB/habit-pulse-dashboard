@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { format, addDays, subDays, addMonths, subMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isSameDay, parseISO } from 'date-fns';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle, Filter, Sun, Clock, GripVertical, Edit, Trash2, X, Move } from 'lucide-react';
@@ -416,17 +415,17 @@ const CalendarPage: React.FC = () => {
     );
   };
   
-  // Render day view
+  // Ensure that the energy level overlay in week and day views has a higher z-index
   const renderDayView = () => {
     const blocks = getVisibleTimeBlocks();
     
     return (
-      <div className="day-view h-[calc(100vh-220px)] overflow-y-auto">
+      <div className="day-view h-[calc(100vh-220px)] overflow-y-auto relative">
         <EnergyLevelOverlay 
           data={energyLevels}
           onUpdateEnergyLevel={handleUpdateEnergyLevel}
           view="day"
-          className="mb-4"
+          className="mb-4 z-10"
         />
         
         <div className="grid grid-cols-[100px_1fr] gap-2">
@@ -465,18 +464,18 @@ const CalendarPage: React.FC = () => {
       </div>
     );
   };
-  
+
   // Render week view
   const renderWeekView = () => {
     const blocks = getVisibleTimeBlocks();
     
     return (
-      <div className="week-view h-[calc(100vh-220px)] overflow-y-auto">
+      <div className="week-view h-[calc(100vh-220px)] overflow-y-auto relative">
         <EnergyLevelOverlay 
           data={energyLevels}
           onUpdateEnergyLevel={handleUpdateEnergyLevel}
           view="week"
-          className="mb-4"
+          className="mb-4 z-10"
         />
         
         <div className="grid grid-cols-[100px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-2">

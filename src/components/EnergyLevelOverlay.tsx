@@ -54,12 +54,13 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
     setActiveDate(null);
   };
   
-  if (view === 'month') {
-    return null; // Don't display on month view
+  // Fix: Removed the incorrect 'month' comparison
+  if (view !== 'day' && view !== 'week') {
+    return null; // Only display for day or week views
   }
   
   return (
-    <div className={cn("energy-level-overlay", className)}>
+    <div className={cn("energy-level-overlay relative z-10", className)}>
       {view === 'day' && (
         <div className="energy-day-view mb-2 p-2 rounded-md">
           <div className="flex items-center justify-between">
@@ -101,7 +102,7 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
               onClick={() => handleEnergyClick(item.date)}
             >
               {activeDate === item.date && (
-                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-10 bg-white dark:bg-gray-800 shadow-lg rounded-md p-1 border border-gray-200 dark:border-gray-700">
+                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-20 bg-white dark:bg-gray-800 shadow-lg rounded-md p-1 border border-gray-200 dark:border-gray-700">
                   <div className="flex space-x-1">
                     {[1, 2, 3, 4, 5].map(level => (
                       <button
