@@ -183,3 +183,32 @@
 [role="dialog"] {
   z-index: 1500 !important;
 }
+
+/* Fix month view specifically */
+.rbc-month-view .rbc-event {
+  min-height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 2px 4px !important;
+  margin: 1px 0 !important;
+}
+
+.rbc-row-segment {
+  padding: 0 2px 1px 2px !important;
+}
+
+.rbc-month-row {
+  overflow: visible !important;
+}
+
+.rbc-row-content {
+  z-index: 20 !important;
+}
+
+.rbc-month-view .rbc-event-content {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  width: 100% !important;
+  line-height: 1.2 !important;
+}

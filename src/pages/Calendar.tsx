@@ -105,15 +105,18 @@ const CalendarPage: React.FC = () => {
   // Generate sample events
   function generateSampleEvents(): CalendarEvent[] {
     const today = new Date();
-    const tomorrow = addDays(today, 1);
-    const dayAfter = addDays(today, 2);
+    
+    // Create copies of today's date to modify without affecting the original
+    const todayEvents = new Date(today);
+    const tomorrowEvents = addDays(new Date(today), 1);
+    const dayAfterEvents = addDays(new Date(today), 2);
     
     return [
       {
         id: '1',
         title: 'Morning Meditation',
-        start: new Date(new Date(today).setHours(7, 0, 0, 0)),
-        end: new Date(new Date(today).setHours(7, 30, 0, 0)),
+        start: new Date(new Date(todayEvents).setHours(7, 0, 0, 0)),
+        end: new Date(new Date(todayEvents).setHours(7, 30, 0, 0)),
         category: 'Mindfulness',
         completed: true,
         description: 'Focus on breathing and mindfulness'
@@ -121,8 +124,8 @@ const CalendarPage: React.FC = () => {
       {
         id: '2',
         title: 'Workout Session',
-        start: new Date(new Date(today).setHours(8, 30, 0, 0)),
-        end: new Date(new Date(today).setHours(9, 30, 0, 0)),
+        start: new Date(new Date(todayEvents).setHours(8, 30, 0, 0)),
+        end: new Date(new Date(todayEvents).setHours(9, 30, 0, 0)),
         category: 'Fitness',
         completed: false,
         description: 'Strength training day'
@@ -130,8 +133,8 @@ const CalendarPage: React.FC = () => {
       {
         id: '3',
         title: 'Project Planning',
-        start: new Date(new Date(tomorrow).setHours(10, 0, 0, 0)),
-        end: new Date(new Date(tomorrow).setHours(11, 30, 0, 0)),
+        start: new Date(new Date(tomorrowEvents).setHours(10, 0, 0, 0)),
+        end: new Date(new Date(tomorrowEvents).setHours(11, 30, 0, 0)),
         category: 'Work',
         completed: false,
         description: 'Quarterly goals review'
@@ -139,8 +142,8 @@ const CalendarPage: React.FC = () => {
       {
         id: '4',
         title: 'Team Meeting',
-        start: new Date(new Date(tomorrow).setHours(14, 0, 0, 0)),
-        end: new Date(new Date(tomorrow).setHours(15, 0, 0, 0)),
+        start: new Date(new Date(tomorrowEvents).setHours(14, 0, 0, 0)),
+        end: new Date(new Date(tomorrowEvents).setHours(15, 0, 0, 0)),
         category: 'Work',
         completed: false,
         description: 'Weekly sync'
@@ -148,11 +151,40 @@ const CalendarPage: React.FC = () => {
       {
         id: '5',
         title: 'Evening Run',
-        start: new Date(new Date(dayAfter).setHours(18, 0, 0, 0)),
-        end: new Date(new Date(dayAfter).setHours(19, 0, 0, 0)),
+        start: new Date(new Date(dayAfterEvents).setHours(18, 0, 0, 0)),
+        end: new Date(new Date(dayAfterEvents).setHours(19, 0, 0, 0)),
         category: 'Fitness',
         completed: false,
         description: '5k easy pace'
+      },
+      // Add more events scattered throughout the month for better monthly view
+      {
+        id: '6',
+        title: 'Monthly Review',
+        start: new Date(new Date(today.getFullYear(), today.getMonth(), 15, 10, 0)),
+        end: new Date(new Date(today.getFullYear(), today.getMonth(), 15, 12, 0)),
+        category: 'Work',
+        completed: false,
+        description: 'Monthly team review'
+      },
+      {
+        id: '7',
+        title: 'Yoga Class',
+        start: new Date(new Date(today.getFullYear(), today.getMonth(), 20, 18, 0)),
+        end: new Date(new Date(today.getFullYear(), today.getMonth(), 20, 19, 30)),
+        category: 'Mindfulness',
+        completed: false,
+        description: 'Hatha yoga session'
+      },
+      {
+        id: '8',
+        title: 'Product Launch',
+        start: new Date(new Date(today.getFullYear(), today.getMonth(), 25, 9, 0)),
+        end: new Date(new Date(today.getFullYear(), today.getMonth(), 25, 17, 0)),
+        category: 'Work',
+        allDay: true,
+        completed: false,
+        description: 'New product launch day'
       }
     ];
   }
@@ -268,14 +300,6 @@ const CalendarPage: React.FC = () => {
 
   // Custom event styling
   const eventStyleGetter = (event: CalendarEvent) => {
-    const categoryColors: Record<string, string> = {
-      'Mindfulness': 'bg-purple-100 border-purple-300 text-purple-700',
-      'Fitness': 'bg-emerald-100 border-emerald-300 text-emerald-700',
-      'Work': 'bg-blue-100 border-blue-300 text-blue-700',
-      'Learning': 'bg-amber-100 border-amber-300 text-amber-700',
-      'Personal': 'bg-pink-100 border-pink-300 text-pink-700'
-    };
-    
     const style = {
       backgroundColor: event.category === 'Mindfulness' ? '#f3e8ff' :
                        event.category === 'Fitness' ? '#d1fae5' :
