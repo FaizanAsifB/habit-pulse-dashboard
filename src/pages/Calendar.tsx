@@ -1,18 +1,29 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { Calendar as BigCalendar, dateFnsLocalizer, Views } from 'react-big-calendar';
+import { 
+  Calendar as BigCalendar,
+  dateFnsLocalizer, 
+  Views
+} from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, addDays } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import TopNavBar from '@/components/TopNavBar';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, PlusCircle, Filter } from 'lucide-react';
+import { 
+  Calendar as CalendarIcon, 
+  ChevronLeft, 
+  ChevronRight, 
+  PlusCircle, 
+  Filter 
+} from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import EnergyLevelOverlay from '@/components/EnergyLevelOverlay';
 import TimeBlockForm, { TimeBlockFormData } from '@/components/TimeBlockForm';
+import { Calendar } from '@/components/ui/calendar';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -328,7 +339,7 @@ const CalendarPage: React.FC = () => {
                   <CalendarIcon className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" style={{ zIndex: 50 }}>
+              <PopoverContent className="w-auto p-0 z-50">
                 <Calendar
                   mode="single"
                   selected={currentDate}

@@ -157,6 +157,12 @@
   background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
+/* Fix z-index issues */
+.energy-level-overlay {
+  position: relative;
+  z-index: 10;
+}
+
 .energy-level-overlay .popover-content {
   z-index: 100 !important;
 }
@@ -165,4 +171,15 @@
 .rbc-time-view, 
 .rbc-agenda-view {
   z-index: 10 !important;
+  position: relative;
+}
+
+/* Tooltips and popovers need to be above everything */
+[data-radix-popper-content-wrapper] {
+  z-index: 1000 !important;
+}
+
+/* Ensure dialogs are above everything */
+[role="dialog"] {
+  z-index: 1500 !important;
 }
