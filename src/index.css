@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -172,8 +173,9 @@
   left: 0;
   top: 0;
   height: 100%;
+  width: 100%;
   z-index: 25;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .energy-hour-marker {
@@ -181,19 +183,64 @@
   left: 8px;
   transform: translateY(-50%);
   z-index: 25;
+  pointer-events: auto;
+}
+
+/* Fix calendar layout with energy levels */
+.rbc-time-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  border: 1px solid #ddd;
+  min-height: 0;
 }
 
 .rbc-time-view .rbc-time-gutter {
   padding-left: 30px !important;
+  width: 100px !important;
 }
 
 .rbc-time-view .rbc-time-header-gutter {
   width: 100px !important;
+  min-width: 100px !important;
+  max-width: 100px !important;
 }
 
 .rbc-time-view .rbc-time-content {
   position: relative;
-  margin-left: 20px;
+  display: flex;
+  flex: 1 0 0%;
+  align-items: flex-start;
+  width: 100%;
+  border-top: 2px solid #ddd;
+  overflow-y: auto;
+  padding-top: 0;
+}
+
+.rbc-time-view .rbc-time-content > * + * > * {
+  border-left: 1px solid #ddd;
+}
+
+.rbc-time-view .rbc-day-slot {
+  position: relative;
+}
+
+.rbc-time-view .rbc-events-container {
+  margin-left: 15px;
+}
+
+.rbc-time-column {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.rbc-timeslot-group {
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 /* Fix month view specifically */
@@ -223,4 +270,18 @@
   text-overflow: ellipsis !important;
   width: 100% !important;
   line-height: 1.2 !important;
+}
+
+/* Ensure energy markers cover full height */
+.rbc-time-view .rbc-time-content .time-axis-energy-levels {
+  height: 100%;
+  min-height: 1440px; /* 24 hours × 60 minutes */
+}
+
+.rbc-time-header-content {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  border-left: 1px solid #ddd;
 }
