@@ -1,21 +1,19 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Battery, BatteryCharging, BatteryFull, BatteryLow, BatteryMedium, BatteryWarning } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format, addHours, startOfDay, parse } from 'date-fns';
 
 interface EnergyLevelData {
   date: string; // ISO date string
   level: number; // 1-5 energy level
-  hour?: number; // Optional hour of the day (0-23)
 }
 
 interface EnergyLevelOverlayProps {
   data: EnergyLevelData[];
-  onUpdateEnergyLevel: (date: string, level: number, hour?: number) => void;
+  onUpdateEnergyLevel: (date: string, level: number) => void;
   className?: string;
-  view: 'day' | 'week' | 'month';
+  view: 'day' | 'week';
 }
 
 const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({ 
@@ -25,22 +23,6 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
   view
 }) => {
   const [activeDate, setActiveDate] = useState<string | null>(null);
-  const [activeHour, setActiveHour] = useState<number | null>(null);
-  const [hourlyEnergyLevels, setHourlyEnergyLevels] = useState<Record<string, number>>({});
-  
-  // Prepare hourly energy levels
-  useEffect(() => {
-    const hourlyMap: Record<string, number> = {};
-    
-    data.forEach(item => {
-      if (item.hour !== undefined) {
-        const key = `${item.date}-${item.hour}`;
-        hourlyMap[key] = item.level;
-      }
-    });
-    
-    setHourlyEnergyLevels(hourlyMap);
-  }, [data]);
   
   const getEnergyIcon = (level: number) => {
     switch (level) {
@@ -64,73 +46,13 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
     }
   };
   
-  const handleEnergyClick = (date: string, hour?: number) => {
-    setActiveDate(date);
-    setActiveHour(hour ?? null);
+  const handleEnergyClick = (date: string) => {
+    setActiveDate(date === activeDate ? null : date);
   };
   
-  const handleSelectLevel = (date: string, level: number, hour?: number) => {
-    onUpdateEnergyLevel(date, level, hour);
+  const handleSelectLevel = (date: string, level: number) => {
+    onUpdateEnergyLevel(date, level);
     setActiveDate(null);
-    setActiveHour(null);
-  };
-  
-  // Render time-axis energy levels for day/week view
-  const renderTimeAxisEnergyLevels = () => {
-    // Generate hours from 0 to 23
-    const hours = Array.from({ length: 24 }, (_, i) => i);
-    const today = format(new Date(), 'yyyy-MM-dd');
-    
-    return (
-      <div className="time-axis-energy-levels">
-        {hours.map(hour => {
-          const timeKey = `${today}-${hour}`;
-          const level = hourlyEnergyLevels[timeKey] || 0;
-          
-          return (
-            <div key={hour} className="energy-hour-marker" style={{ top: `calc(${hour * (100/24)}% + 22px)` }}>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button 
-                    className={cn(
-                      "energy-indicator w-6 h-6 rounded-full flex items-center justify-center",
-                      level > 0 ? getEnergyColor(level) : "bg-gray-100 dark:bg-gray-800"
-                    )}
-                    aria-label={`Set energy level for ${hour}:00`}
-                  >
-                    {level > 0 ? getEnergyIcon(level) : null}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent 
-                  className="p-0 w-auto bg-white dark:bg-gray-800 shadow-lg rounded-md border border-gray-200 dark:border-gray-700"
-                  sideOffset={5}
-                  align="center"
-                  style={{ zIndex: 100 }}
-                >
-                  <div className="p-2">
-                    <div className="text-xs font-medium mb-2">{`Energy at ${hour}:00`}</div>
-                    <div className="flex space-x-1">
-                      {[1, 2, 3, 4, 5].map(energyLevel => (
-                        <button
-                          key={energyLevel}
-                          onClick={() => handleSelectLevel(today, energyLevel, hour)}
-                          className={cn(
-                            "p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700",
-                            level === energyLevel ? "bg-gray-200 dark:bg-gray-600" : ""
-                          )}
-                        >
-                          {getEnergyIcon(energyLevel)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-          );
-        })}
-      </div>
-    );
   };
   
   // Only display for day or week views
@@ -140,13 +62,41 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
   
   return (
     <div className={cn("energy-level-overlay relative", className)} style={{ zIndex: 40 }}>
-      {/* Day view for integrated time-axis energy levels */}
-      {view === 'day' && renderTimeAxisEnergyLevels()}
+      {view === 'day' && (
+        <div className="energy-day-view mb-2 p-2 rounded-md">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium">Energy Level</h3>
+            {activeDate ? (
+              <div className="flex space-x-1">
+                {[1, 2, 3, 4, 5].map(level => (
+                  <button
+                    key={level}
+                    onClick={() => handleSelectLevel(activeDate, level)}
+                    className={`p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      data.find(d => d.date === activeDate)?.level === level 
+                        ? 'bg-gray-200 dark:bg-gray-600' 
+                        : ''
+                    }`}
+                  >
+                    {getEnergyIcon(level)}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <button 
+                onClick={() => handleEnergyClick(new Date().toISOString().split('T')[0])}
+                className="text-xs px-2 py-1 bg-brand-indigo/10 text-brand-indigo rounded-md hover:bg-brand-indigo/20"
+              >
+                Set Energy
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       
-      {/* Week view top bar remains */}
       {view === 'week' && (
         <div className="energy-week-view flex justify-between mb-2 px-[100px]">
-          {data.filter(item => !item.hour).map(item => (
+          {data.map(item => (
             <div 
               key={item.date}
               className={`energy-indicator relative flex-1 mx-px h-2 rounded-full ${getEnergyColor(item.level)}`}
@@ -169,10 +119,9 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
                       <button
                         key={level}
                         onClick={() => handleSelectLevel(item.date, level)}
-                        className={cn(
-                          "p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700",
-                          item.level === level ? "bg-gray-200 dark:bg-gray-600" : ""
-                        )}
+                        className={`p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                          item.level === level ? 'bg-gray-200 dark:bg-gray-600' : ''
+                        }`}
                       >
                         {getEnergyIcon(level)}
                       </button>
@@ -184,9 +133,6 @@ const EnergyLevelOverlay: React.FC<EnergyLevelOverlayProps> = ({
           ))}
         </div>
       )}
-      
-      {/* In week view, also render the time axis markers */}
-      {view === 'week' && renderTimeAxisEnergyLevels()}
     </div>
   );
 };
