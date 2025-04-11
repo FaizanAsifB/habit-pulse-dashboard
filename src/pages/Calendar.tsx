@@ -1,11 +1,10 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
 import { 
   Calendar as BigCalendar,
   dateFnsLocalizer, 
   Views
 } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay, addDays } from 'date-fns';
+import { format, parse, startOfWeek, getDay, addDays, addHours, startOfDay } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import TopNavBar from '@/components/TopNavBar';
 import { Button } from '@/components/ui/button';
@@ -19,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import EnergyLevelOverlay from '@/components/EnergyLevelOverlay';
 import TimeBlockForm, { TimeBlockFormData } from '@/components/TimeBlockForm';
@@ -60,6 +59,7 @@ interface CalendarEvent {
 interface EnergyLevelData {
   date: string;
   level: number;
+  hour?: number;
 }
 
 const CalendarPage: React.FC = () => {
@@ -85,7 +85,7 @@ const CalendarPage: React.FC = () => {
     const data: EnergyLevelData[] = [];
     const today = new Date();
     
-    // Generate some sample energy data for the week
+    // Generate daily energy data for the week
     for (let i = -3; i <= 3; i++) {
       const date = addDays(today, i);
       const dateString = format(date, 'yyyy-MM-dd');
@@ -96,6 +96,19 @@ const CalendarPage: React.FC = () => {
       data.push({
         date: dateString,
         level
+      });
+    }
+    
+    // Generate hourly energy data for today
+    const todayString = format(today, 'yyyy-MM-dd');
+    for (let hour = 8; hour <= 20; hour += 2) {
+      // Random energy level between 1 and 5
+      const level = Math.floor(Math.random() * 5) + 1;
+      
+      data.push({
+        date: todayString,
+        level,
+        hour
       });
     }
     
@@ -219,13 +232,30 @@ const CalendarPage: React.FC = () => {
   };
   
   // Handle energy level updates
-  const handleUpdateEnergyLevel = (date: string, level: number) => {
+  const handleUpdateEnergyLevel = (date: string, level: number, hour?: number) => {
     setEnergyLevels(prev => {
-      const existing = prev.findIndex(item => item.date === date);
-      if (existing !== -1) {
-        return prev.map(item => item.date === date ? { ...item, level } : item);
+      if (hour !== undefined) {
+        // Handle hourly energy level update
+        const existingHourlyIndex = prev.findIndex(item => item.date === date && item.hour === hour);
+        
+        if (existingHourlyIndex !== -1) {
+          return prev.map(item => 
+            (item.date === date && item.hour === hour) ? { ...item, level } : item
+          );
+        } else {
+          return [...prev, { date, level, hour }];
+        }
       } else {
-        return [...prev, { date, level }];
+        // Handle daily energy level update
+        const existingDailyIndex = prev.findIndex(item => item.date === date && item.hour === undefined);
+        
+        if (existingDailyIndex !== -1) {
+          return prev.map(item => 
+            (item.date === date && item.hour === undefined) ? { ...item, level } : item
+          );
+        } else {
+          return [...prev, { date, level }];
+        }
       }
     });
   };
@@ -336,147 +366,149 @@ const CalendarPage: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <TopNavBar />
-      
-      <main className="container mx-auto pt-6 px-4">
-        <div className="header-controls flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
-          {/* Date selector and navigation */}
-          <div className="flex items-center space-x-2 mb-4 sm:mb-0">
-            <Button variant="outline" size="icon" onClick={navigatePrevious}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+    <TooltipProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <TopNavBar />
+        
+        <main className="container mx-auto pt-6 px-4">
+          <div className="header-controls flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
+            {/* Date selector and navigation */}
+            <div className="flex items-center space-x-2 mb-4 sm:mb-0">
+              <Button variant="outline" size="icon" onClick={navigatePrevious}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <h1 className="text-xl font-bold mx-2">{getHeaderTitle()}</h1>
+              
+              <Button variant="outline" size="icon" onClick={navigateNext}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              
+              <Button variant="outline" size="sm" onClick={goToToday} className="ml-2">
+                Today
+              </Button>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <CalendarIcon className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 z-50">
+                  <Calendar
+                    mode="single"
+                    selected={currentDate}
+                    onSelect={(date) => date && setCurrentDate(date)}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
             
-            <h1 className="text-xl font-bold mx-2">{getHeaderTitle()}</h1>
-            
-            <Button variant="outline" size="icon" onClick={navigateNext}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            
-            <Button variant="outline" size="sm" onClick={goToToday} className="ml-2">
-              Today
-            </Button>
-            
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <CalendarIcon className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-50">
-                <Calendar
-                  mode="single"
-                  selected={currentDate}
-                  onSelect={(date) => date && setCurrentDate(date)}
-                  initialFocus
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
+            {/* Right side controls */}
+            <div className="flex flex-wrap items-center gap-2">
+              <ToggleGroup 
+                type="single" 
+                value={view} 
+                onValueChange={(value) => value && setView(value as CalendarView)}
+              >
+                <ToggleGroupItem value="day" aria-label="Day view">Day</ToggleGroupItem>
+                <ToggleGroupItem value="week" aria-label="Week view">Week</ToggleGroupItem>
+                <ToggleGroupItem value="month" aria-label="Month view">Month</ToggleGroupItem>
+              </ToggleGroup>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => setShowCompleted(!showCompleted)}
+                    className={!showCompleted ? 'bg-gray-100' : ''}
+                  >
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {showCompleted ? 'Hide completed' : 'Show completed'}
+                </TooltipContent>
+              </Tooltip>
+              
+              <Button onClick={() => {
+                setEditingEvent(null);
+                setIsTimeBlockFormOpen(true);
+              }}>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Add Time Block
+              </Button>
+            </div>
           </div>
           
-          {/* Right side controls */}
-          <div className="flex flex-wrap items-center gap-2">
-            <ToggleGroup 
-              type="single" 
-              value={view} 
-              onValueChange={(value) => value && setView(value as CalendarView)}
-            >
-              <ToggleGroupItem value="day" aria-label="Day view">Day</ToggleGroupItem>
-              <ToggleGroupItem value="week" aria-label="Week view">Week</ToggleGroupItem>
-              <ToggleGroupItem value="month" aria-label="Month view">Month</ToggleGroupItem>
-            </ToggleGroup>
-            
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={() => setShowCompleted(!showCompleted)}
-                  className={!showCompleted ? 'bg-gray-100' : ''}
-                >
-                  <Filter className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {showCompleted ? 'Hide completed' : 'Show completed'}
-              </TooltipContent>
-            </Tooltip>
-            
-            <Button onClick={() => {
-              setEditingEvent(null);
-              setIsTimeBlockFormOpen(true);
-            }}>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add Time Block
-            </Button>
+          {/* Energy Level Overlay positioned for time axis */}
+          {(view === 'day' || view === 'week') && (
+            <EnergyLevelOverlay 
+              data={energyLevels}
+              onUpdateEnergyLevel={handleUpdateEnergyLevel}
+              view={view}
+              className="mb-4"
+            />
+          )}
+          
+          {/* Main calendar content */}
+          <div className="calendar-content bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
+            <BigCalendar
+              localizer={localizer}
+              events={showCompleted ? events : events.filter(event => !event.completed)}
+              startAccessor="start"
+              endAccessor="end"
+              defaultView={mapViewToRBC(view)}
+              view={mapViewToRBC(view)}
+              onView={(newView) => {
+                if (newView === Views.DAY) setView('day');
+                else if (newView === Views.WEEK) setView('week');
+                else if (newView === Views.MONTH) setView('month');
+              }}
+              onNavigate={date => setCurrentDate(date)}
+              date={currentDate}
+              onSelectEvent={handleSelectEvent}
+              onSelectSlot={handleSelectSlot}
+              selectable
+              eventPropGetter={eventStyleGetter}
+              dayPropGetter={(date) => {
+                const today = new Date();
+                return {
+                  className: format(date, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd') ? 'rbc-today' : ''
+                };
+              }}
+              popup
+              {...calendarStyles}
+            />
           </div>
-        </div>
+        </main>
         
-        {/* Energy Level Overlay (only for day and week views) */}
-        {(view === 'day' || view === 'week') && (
-          <EnergyLevelOverlay 
-            data={energyLevels}
-            onUpdateEnergyLevel={handleUpdateEnergyLevel}
-            view={view}
-            className="mb-4"
-          />
-        )}
-        
-        {/* Main calendar content */}
-        <div className="calendar-content bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-100 dark:border-gray-700">
-          <BigCalendar
-            localizer={localizer}
-            events={showCompleted ? events : events.filter(event => !event.completed)}
-            startAccessor="start"
-            endAccessor="end"
-            defaultView={mapViewToRBC(view)}
-            view={mapViewToRBC(view)}
-            onView={(newView) => {
-              if (newView === Views.DAY) setView('day');
-              else if (newView === Views.WEEK) setView('week');
-              else if (newView === Views.MONTH) setView('month');
-            }}
-            onNavigate={date => setCurrentDate(date)}
-            date={currentDate}
-            onSelectEvent={handleSelectEvent}
-            onSelectSlot={handleSelectSlot}
-            selectable
-            eventPropGetter={eventStyleGetter}
-            dayPropGetter={(date) => {
-              const today = new Date();
-              return {
-                className: format(date, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd') ? 'rbc-today' : ''
-              };
-            }}
-            popup
-            {...calendarStyles}
-          />
-        </div>
-      </main>
-      
-      {/* Time Block Form Dialog */}
-      <Dialog open={isTimeBlockFormOpen} onOpenChange={setIsTimeBlockFormOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>{editingEvent?.id ? 'Edit Time Block' : 'Add Time Block'}</DialogTitle>
-          </DialogHeader>
-          <TimeBlockForm 
-            initialData={editingEvent ? {
-              title: editingEvent.title,
-              description: editingEvent.description || '',
-              date: editingEvent.start,
-              startTime: format(editingEvent.start, 'HH:mm'),
-              endTime: format(editingEvent.end, 'HH:mm'),
-              category: editingEvent.category,
-              completed: editingEvent.completed
-            } : undefined}
-            onSubmit={handleSaveTimeBlock}
-            onCancel={() => setIsTimeBlockFormOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-    </div>
+        {/* Time Block Form Dialog */}
+        <Dialog open={isTimeBlockFormOpen} onOpenChange={setIsTimeBlockFormOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>{editingEvent?.id ? 'Edit Time Block' : 'Add Time Block'}</DialogTitle>
+            </DialogHeader>
+            <TimeBlockForm 
+              initialData={editingEvent ? {
+                title: editingEvent.title,
+                description: editingEvent.description || '',
+                date: editingEvent.start,
+                startTime: format(editingEvent.start, 'HH:mm'),
+                endTime: format(editingEvent.end, 'HH:mm'),
+                category: editingEvent.category,
+                completed: editingEvent.completed
+              } : undefined}
+              onSubmit={handleSaveTimeBlock}
+              onCancel={() => setIsTimeBlockFormOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+    </TooltipProvider>
   );
 };
 
