@@ -90,7 +90,10 @@ const routeTree = rootRoute.addChildren([
 ]);
 
 // Create the router using the route tree
-export const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  defaultPreload: 'intent'
+});
 
 // Register the router for type safety
 declare module '@tanstack/react-router' {
@@ -99,4 +102,4 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export { RouterProvider };
+export { router, RouterProvider };
