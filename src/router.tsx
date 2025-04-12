@@ -4,7 +4,8 @@ import {
   createRoute, 
   createRouter,
   RouterProvider,
-  Outlet
+  Outlet,
+  Link
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import Homepage from './pages/Homepage';
@@ -102,4 +103,5 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export { router, RouterProvider };
+// Export Link component to make it accessible throughout the app
+export { router, RouterProvider, Link };
