@@ -4,7 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import { router } from './router.tsx'
 
-// Initialize the router before rendering
-router.hydrate();
+// TanStack Router doesn't need explicit initialization before rendering in newer versions
+// The RouterProvider component handles this internally
 
 createRoot(document.getElementById("root")!).render(<App />);
