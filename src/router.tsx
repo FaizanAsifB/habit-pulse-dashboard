@@ -103,5 +103,5 @@ declare module '@tanstack/react-router' {
   }
 }
 
-// Export Link component to make it accessible throughout the app
+// Export the router, RouterProvider and Link components
 export { router, RouterProvider, Link };

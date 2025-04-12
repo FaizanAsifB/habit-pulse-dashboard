@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useMatchRoute } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { 
   Bell, 
   Calendar, 
@@ -26,8 +26,7 @@ import {
 import { Button } from '@/components/ui/button';
 
 const TopNavBar = () => {
-  const matchRoute = useMatchRoute();
-  const isActive = (path: string) => matchRoute({ to: path });
+  const isActive = (path: string) => window.location.pathname === path;
 
   return (
     <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 bg-brand-white dark:bg-gray-900">
