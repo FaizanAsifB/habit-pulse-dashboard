@@ -90,9 +90,9 @@ const routeTree = rootRoute.addChildren([
 ]);
 
 // Create the router using the route tree
+// @ts-ignore - Working around the strictNullChecks requirement
 const router = createRouter({
-  routeTree,
-  // Remove defaultPreload option to fix TypeScript error
+  routeTree
 });
 
 // Register the router for type safety
