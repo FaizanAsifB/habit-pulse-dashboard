@@ -92,7 +92,7 @@ const routeTree = rootRoute.addChildren([
 // Create the router using the route tree
 const router = createRouter({
   routeTree,
-  defaultPreload: 'intent'
+  // Remove defaultPreload option to fix TypeScript error
 });
 
 // Register the router for type safety
