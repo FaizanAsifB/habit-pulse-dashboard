@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useMatchRoute } from '@tanstack/react-router';
 import { 
   Bell, 
   Calendar, 
@@ -26,7 +26,8 @@ import {
 import { Button } from '@/components/ui/button';
 
 const TopNavBar = () => {
-  const location = useLocation();
+  const matchRoute = useMatchRoute();
+  const isActive = (path: string) => matchRoute({ to: path });
 
   return (
     <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 bg-brand-white dark:bg-gray-900">
@@ -35,71 +36,77 @@ const TopNavBar = () => {
       </div>
       
       <div className="flex items-center space-x-2 sm:space-x-4">
-        <Link to="/dashboard">
-          <Button 
-            variant={location.pathname === '/dashboard' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="hidden md:flex items-center gap-1"
-          >
+        <Button 
+          variant={isActive('/dashboard') ? 'default' : 'ghost'} 
+          size="sm" 
+          className="hidden md:flex items-center gap-1"
+          asChild
+        >
+          <Link to="/dashboard">
             <Home className="h-4 w-4" />
             <span>Dashboard</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         
-        <Link to="/habits">
-          <Button 
-            variant={location.pathname === '/habits' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="hidden md:flex items-center gap-1"
-          >
+        <Button 
+          variant={isActive('/habits') ? 'default' : 'ghost'} 
+          size="sm" 
+          className="hidden md:flex items-center gap-1"
+          asChild
+        >
+          <Link to="/habits">
             <Dumbbell className="h-4 w-4" />
             <span>Habits</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         
-        <Link to="/tasks">
-          <Button 
-            variant={location.pathname === '/tasks' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="hidden md:flex items-center gap-1"
-          >
+        <Button 
+          variant={isActive('/tasks') ? 'default' : 'ghost'} 
+          size="sm" 
+          className="hidden md:flex items-center gap-1"
+          asChild
+        >
+          <Link to="/tasks">
             <CheckSquare className="h-4 w-4" />
             <span>Tasks</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         
-        <Link to="/goals">
-          <Button 
-            variant={location.pathname === '/goals' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="hidden md:flex items-center gap-1"
-          >
+        <Button 
+          variant={isActive('/goals') ? 'default' : 'ghost'} 
+          size="sm" 
+          className="hidden md:flex items-center gap-1"
+          asChild
+        >
+          <Link to="/goals">
             <Target className="h-4 w-4" />
             <span>Goals</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         
-        <Link to="/calendar">
-          <Button 
-            variant={location.pathname === '/calendar' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="hidden md:flex items-center gap-1"
-          >
+        <Button 
+          variant={isActive('/calendar') ? 'default' : 'ghost'} 
+          size="sm" 
+          className="hidden md:flex items-center gap-1"
+          asChild
+        >
+          <Link to="/calendar">
             <Calendar className="h-4 w-4" />
             <span>Calendar</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         
-        <Link to="/progress">
-          <Button 
-            variant={location.pathname === '/progress' ? 'default' : 'ghost'} 
-            size="sm" 
-            className="hidden md:flex items-center gap-1"
-          >
+        <Button 
+          variant={isActive('/progress') ? 'default' : 'ghost'} 
+          size="sm" 
+          className="hidden md:flex items-center gap-1"
+          asChild
+        >
+          <Link to="/progress">
             <BarChart className="h-4 w-4" />
             <span>Progress</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         
         <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1">
           <PlusCircle className="h-4 w-4" />
