@@ -5,6 +5,6 @@ import './index.css'
 import { router } from './router.tsx'
 
 // Initialize the router before rendering
-await router.initialize();
+router.hydrate();
 
 createRoot(document.getElementById("root")!).render(<App />);
