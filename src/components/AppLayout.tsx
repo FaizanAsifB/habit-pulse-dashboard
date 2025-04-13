@@ -166,8 +166,6 @@ const AppLayout = () => {
           <Outlet />
         </main>
       </div>
-      <Toaster />
-      <Sonner />
     </SidebarProvider>
   );
 };
