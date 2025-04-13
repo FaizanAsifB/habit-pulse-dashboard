@@ -13,24 +13,37 @@ import Calendar from "./pages/Calendar";
 import ProgressAnalytics from "./pages/ProgressAnalytics";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import AppLayout from "./components/AppLayout";
+import TopNavBar from "./components/TopNavBar";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/dashboard" element={<Index />} />
-        <Route path="/habits" element={<Habits />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/goals" element={<Goals />} />
-        <Route path="/calendar" element={<Calendar />} />
-        <Route path="/progress" element={<ProgressAnalytics />} />
-        <Route path="/settings" element={<Settings />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        {/* Homepage with TopNavBar */}
+        <Route path="/" element={
+          <>
+            <TopNavBar />
+            <Homepage />
+            <Toaster />
+            <Sonner />
+          </>
+        } />
+        
+        {/* App routes with Sidebar */}
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<Index />} />
+          <Route path="/habits" element={<Habits />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/goals" element={<Goals />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/progress" element={<ProgressAnalytics />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+        
+        {/* 404 page */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </TooltipProvider>
