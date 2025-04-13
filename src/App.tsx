@@ -14,7 +14,6 @@ import ProgressAnalytics from "./pages/ProgressAnalytics";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import AppLayout from "./components/AppLayout";
-import TopNavBar from "./components/TopNavBar";
 
 const queryClient = new QueryClient();
 
@@ -22,15 +21,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Routes>
-        {/* Homepage with TopNavBar */}
-        <Route path="/" element={
-          <>
-            <TopNavBar />
-            <Homepage />
-            <Toaster />
-            <Sonner />
-          </>
-        } />
+        {/* Homepage route - only with its own navbar */}
+        <Route path="/" element={<Homepage />} />
         
         {/* App routes with Sidebar */}
         <Route element={<AppLayout />}>
@@ -46,6 +38,8 @@ const App = () => (
         {/* 404 page */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Toaster />
+      <Sonner />
     </TooltipProvider>
   </QueryClientProvider>
 );
