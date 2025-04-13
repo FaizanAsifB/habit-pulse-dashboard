@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { 
@@ -159,6 +160,9 @@ const AppLayout = () => {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="flex-1 p-4">
+          <div className="mb-4">
+            <SidebarTrigger />
+          </div>
           <Outlet />
         </main>
       </div>
