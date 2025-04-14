@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
 import { 
   Calendar as BigCalendar,
@@ -7,7 +6,6 @@ import {
 } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, addDays } from 'date-fns';
 import { enUS } from 'date-fns/locale';
-import TopNavBar from '@/components/TopNavBar';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
@@ -337,7 +335,6 @@ const CalendarPage: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <TopNavBar />
       
       <main className="container mx-auto pt-6 px-4">
         <div className="header-controls flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
@@ -450,6 +447,25 @@ const CalendarPage: React.FC = () => {
               };
             }}
             popup
+            views={[Views.DAY, Views.WEEK, Views.MONTH]}
+            components={{
+              month: {
+                // Add a simple custom component for month view event to ensure visibility
+                event: (props) => (
+                  <div className="rbc-event-content" title={props.event.title}>
+                    <div style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      padding: '2px 5px',
+                      fontSize: '0.85em'
+                    }}>
+                      {props.event.title}
+                    </div>
+                  </div>
+                )
+              }
+            }}
             {...calendarStyles}
           />
         </div>
