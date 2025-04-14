@@ -110,3 +110,25 @@
 .bg-brand-white {
   background-color: var(--brand-white);
 }
+
+/* CSS overrides for react-big-calendar week view alignment */
+.rbc-day-bg,
+.rbc-day-content,
+.rbc-day {
+  flex-basis: 0;
+  flex-grow: 1;
+}
+
+.rbc-row-bg {
+  display: flex;
+}
+
+.custom-big-calendar {
+  height: 600px; /* Adjust as needed */
+  width: 100%;
+  border: 1px solid #ccc; /* For visualization */
+}
+
+.custom-big-calendar .rbc-month-view {
+  height: 100%;
+}

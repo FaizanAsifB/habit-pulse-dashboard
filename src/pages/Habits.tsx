@@ -6,7 +6,6 @@ import {
   ArrowUpDown,
   PlusCircle
 } from 'lucide-react';
-import TopNavBar from '@/components/TopNavBar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -144,7 +143,6 @@ const HabitsPage = () => {
   
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
-      <TopNavBar />
       
       <div className="flex-1 container mx-auto px-4 py-6 max-w-6xl">
         <div className="flex items-center justify-between mb-6">

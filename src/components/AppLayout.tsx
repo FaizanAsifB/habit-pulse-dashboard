@@ -162,7 +162,7 @@ const AppLayout = () => {
         <main className="flex-1 p-4">
           <div className="mb-4">
             <SidebarTrigger />
-          </div>
+          </div>          
           <Outlet />
         </main>
       </div>

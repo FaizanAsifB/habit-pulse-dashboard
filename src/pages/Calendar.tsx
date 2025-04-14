@@ -437,25 +437,9 @@ const CalendarPage: React.FC = () => {
             }}
             popup
             views={[Views.DAY, Views.WEEK, Views.MONTH]}
-            components={{
-              month: {
-                // Add a simple custom component for month view event to ensure visibility
-                event: (props) => (
-                  <div className="rbc-event-content" title={props.event.title}>
-                    <div style={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      padding: '2px 5px',
-                      fontSize: '0.85em'
-                    }}>
-                      {props.event.title}
-                    </div>
-                  </div>
-                )
-              }
-            }}
+            components={{}}
             {...calendarStyles}
+            className="custom-big-calendar"
           />
         </div>
       </main>

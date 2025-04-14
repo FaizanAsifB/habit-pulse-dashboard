@@ -34,34 +34,6 @@ const Homepage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link to="/" className="text-xl font-bold text-primary flex items-center">
-              <Calendar className="mr-2 h-6 w-6" />
-              HabitPulse
-            </Link>
-          </div>
-          
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Features</a>
-            <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors">How It Works</a>
-            <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">Pricing</a>
-            <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">About</a>
-            <a href="#contact" className="text-sm font-medium hover:text-primary transition-colors">Contact</a>
-          </nav>
-          
-          <div className="flex items-center gap-2">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">Log In</Button>
-            </Link>
-            <Link to="/signup">
-              <Button size="sm">Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
 
       <main className="flex-1">
         {/* Hero Section */}
