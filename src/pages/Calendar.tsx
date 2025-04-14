@@ -16,7 +16,6 @@ import {
   Filter 
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import EnergyLevelOverlay from '@/components/EnergyLevelOverlay';
@@ -372,18 +371,8 @@ const CalendarPage: React.FC = () => {
             </Popover>
           </div>
           
-          {/* Right side controls */}
+          {/* Right side controls - REMOVED THE VIEW TOGGLE, KEEPING OTHER CONTROLS */}
           <div className="flex flex-wrap items-center gap-2">
-            <ToggleGroup 
-              type="single" 
-              value={view} 
-              onValueChange={(value) => value && setView(value as CalendarView)}
-            >
-              <ToggleGroupItem value="day" aria-label="Day view">Day</ToggleGroupItem>
-              <ToggleGroupItem value="week" aria-label="Week view">Week</ToggleGroupItem>
-              <ToggleGroupItem value="month" aria-label="Month view">Month</ToggleGroupItem>
-            </ToggleGroup>
-            
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
