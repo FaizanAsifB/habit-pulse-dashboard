@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import TopNavBar from '@/components/TopNavBar';
 import { Button } from '@/components/ui/button';
@@ -169,7 +168,6 @@ const Goals = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <TopNavBar />
       
       <main className="container mx-auto px-4 py-6">
         <div className="flex justify-between items-center mb-6">
