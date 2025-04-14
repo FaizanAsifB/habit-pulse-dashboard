@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
 import { 
   Calendar as BigCalendar,
@@ -366,6 +365,7 @@ const CalendarPage: React.FC = () => {
                   selected={currentDate}
                   onSelect={(date) => date && setCurrentDate(date)}
                   initialFocus
+                  className={cn("p-3 pointer-events-auto")}
                 />
               </PopoverContent>
             </Popover>
@@ -439,20 +439,17 @@ const CalendarPage: React.FC = () => {
             views={[Views.DAY, Views.WEEK, Views.MONTH]}
             components={{
               month: {
-                // Improved month view rendering that properly displays events
-                event: ({ event }) => (
-                  <div className="rbc-event-content-month">
+                // Add a simple custom component for month view event to ensure visibility
+                event: (props) => (
+                  <div className="rbc-event-content" title={props.event.title}>
                     <div style={{
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
-                      padding: '1px 2px',
-                      fontSize: '0.75rem',
-                      lineHeight: '1',
-                      color: '#374151',
-                      width: '100%'
+                      padding: '2px 5px',
+                      fontSize: '0.85em'
                     }}>
-                      {event.title}
+                      {props.event.title}
                     </div>
                   </div>
                 )
