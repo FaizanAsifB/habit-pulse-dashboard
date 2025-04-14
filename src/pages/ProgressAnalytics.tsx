@@ -1,6 +1,4 @@
-
 import React, { useState } from 'react';
-import TopNavBar from '@/components/TopNavBar';
 import { 
   Card, 
   CardContent, 
@@ -100,8 +98,6 @@ const ProgressAnalytics = () => {
   
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
-      <TopNavBar />
-      
       <div className="flex-1 container mx-auto px-4 py-6 max-w-6xl">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Progress & Analytics</h1>
